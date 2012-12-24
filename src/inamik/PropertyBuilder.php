@@ -10,23 +10,49 @@ namespace inamik;
 use \Exception;
 
 /**
- * PropertyBuilder builds an array of properties from composite property sets.
+ * PropertyBuilder is an API that helps you build an array of properties from
+ * composite property sets.
  *
- * Think of PropertyBuilder as array_merge with some special features:
+ * Think of PropertyBuilder as array_merge with some extra features:
  *
- *  - You can reference other properties within your property value:
+ * * Variable Substitution
  *
- *        'host' => 'localhost',
- *        'url'  => 'http://{{host}}/index.html'
+ *   You can reference other properties within your property value:
  *
- *  - The ability to overwrite a single element of a property who's value is
- *    an array. For example, assuming this property has already been added:
+ *     'subject' => 'world',
+ *     'message' => 'Hello, {{subject}}'
  *
- *        'db_info' => array ( 'host' => 'localhost', 'user' => 'user', 'pwd' => 'pwd' )
+ *   You can also reference elements of an array:
  *
- *    You can overwite any element of this array in a follow-on property set:
+ *     'array'   => array( 'salutation' => 'Hello', 'subject' => 'world' ),
+ *     'message' => '{{array[salutation]}}, {{array[subject]}}'
  *
- *        'db_info[host]' => 'remotehost'
+ * * Nested Assignments
+ *
+ *   You can reassign the value of a nested array element:
+ *
+ *     'array'          => array( 'salutation' => 'Hello', 'subject' => 'world' ),
+ *     'array[subject]' => 'Newman',
+ *     'message'        => '{{array[salutation]}}, {{array[subject]}}'
+ *
+ *   You can create new nested array elements:
+ *
+ *     'array'             => array( 'salutation' => 'Hello', 'subject' => 'world' ),
+ *     'array[salutation]' => 'Goodbye',
+ *     'array[adjective]'  => 'cruel',
+ *     'message'           => '{{array[salutation]}}, {{array[adjective]} {{array[subject]}}'
+ *
+ * * Prototypes
+ *
+ *   You can create arrays and use them as prototypes to reduce redundancy in your
+ *   property definitions:
+ *
+ *     'prototype'          => array( 'salutation' => 'Hello', 'subject' => 'world'),
+ *     'array1'             => '{{prototype}}',
+ *     'array1[subject]'    => 'Newman',
+ *     'array2'             => '{{prototype}}',
+ *     'array2[salutation]' => 'Goodbye',
+ *     'array2[adjective]'  => 'cruel'
  */
 final class PropertyBuilder
 {
